@@ -7,6 +7,8 @@ require 'uri'
 
 class MySinatraApp < Sinatra::Base
 
+  set :bind, '0.0.0.0'
+
   before do
   	request.body.rewind
   	@request_payload = JSON.parse request.body.read
@@ -34,7 +36,7 @@ class MySinatraApp < Sinatra::Base
 			puts '============'
 			puts intent
 			puts confidence
-			if intent == 'interview' && confidence > 0.5
+			if intent == 'interview' && confidence > 0.6
 				puts 'there'
 				true.to_json
 			else 
