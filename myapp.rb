@@ -1,17 +1,34 @@
 # myapp.rb
 require 'sinatra'
+require 'sinatra/cross_origin'
 require 'net/http'
 require 'net/https'
 require 'uri'
 
 
+
+
 class MySinatraApp < Sinatra::Base
 
+  register Sinatra::CrossOrigin
+
   set :bind, '0.0.0.0'
+
+  configure do
+    enable :cross_origin
+  end
 
   before do
   	request.body.rewind
   	@request_payload = JSON.parse request.body.read
+  end
+
+  options "*" do
+  	response.headers["Allow"] = "HEAD,GET,PUT,POST,DELETE,OPTIONS"
+ 
+  	response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
+ 
+  	200
   end
 
   get '/' do
@@ -19,6 +36,7 @@ class MySinatraApp < Sinatra::Base
   end
 
   post '/analyzer' do
+  	cross_origin
     paragraph = @request_payload['text'].to_s
   	sentences = paragraph.scan(/[^\.!?]+[\.!?]/).map(&:strip)
 
